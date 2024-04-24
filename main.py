@@ -9,6 +9,8 @@ from initialize import Initialize
 
 
 if __name__ == "__main__":
-    Initialize().setup()
+    init = Initialize()
+    init.setup()
+
     handler = RequestHandler()
     handler.handle_request()
