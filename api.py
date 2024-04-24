@@ -9,19 +9,64 @@ class RequestHandler:
     def __init__(self):
         # base requests
         self.parser.add_argument("--resize-auto", action="store_true",
-                                 help="Perform auto resizing. return = str(base64.b64encode)")
+                                 help="Perform auto resizing. The return is a base64 encode of the resized image. "
+                                      "** Required filedes: "
+                                      "--image-path "
+                                      ", Optional fields: "
+                                      "--save-image "
+                                      "--output-dir-resizing **")
         self.parser.add_argument("--resize-manual", action="store_true",
-                                 help="Perform manual resizing. return = str(base64.b64encode)")
+                                 help="Perform manual resizing. The return is a base64 encode of the resized image. "
+                                      "If no parameters are provided the operation will default to basic_resize() "
+                                      "** Required fields: "
+                                      "--image-path "
+                                      ", Optional fields: "
+                                      "--name "
+                                      "--encode "
+                                      "--new-width "
+                                      "--new-height "
+                                      "--super-resolution "
+                                      "--output-dir-resizing "
+                                      "--save-image **")
         self.parser.add_argument("--resize-auto-super", action="store_true",
-                                 help="Perform auto super resizing. return = str(base64.b64encode)")
+                                 help="Perform auto super resizing. The return is a base64 encode of the resized "
+                                      "image. "
+                                      "** Required fields: "
+                                      "--image-path "
+                                      ", Optional fields: "
+                                      "--save-image "
+                                      "--output-dir-resizing **")
         self.parser.add_argument("--resize-auto-basic", action="store_true",
-                                 help="Perform auto basic resizing. return = str(base64.b64encode)")
+                                 help="Perform auto basic resizing. The return is a base64 encode of the resized image. " 
+                                      "** Required fields: "
+                                      "--image-path "
+                                      ", Optional fields: "
+                                      "--save-image "
+                                      "--output-dir-resizing **")
         self.parser.add_argument("--resize-dir", action="store_true",
-                                 help="Perform directory resizing. return = list(str(base64.b64encode))")
+                                 help="Perform auto directory resizing. The return is a base64 encode of the resized "
+                                      "image "
+                                      "** Required fields: "
+                                      "--image-dir-path "
+                                      ", Optional fields: "
+                                      "--save-image "
+                                      "--output-dir-resizing **")
         self.parser.add_argument("--change-encode", action="store_true",
-                                 help="Change encoding. return = saves an image")
+                                 help="Change the image encoding. The return is a path where the images were saved."
+                                      "image. "
+                                      "** Required fields: "
+                                      "--image-path "
+                                      "--encode "
+                                      ", Optional fields: "
+                                      "--output-dir-encode **")
         self.parser.add_argument("--change-encode-dir", action="store_true",
-                                 help="Change encoding of all images in a directory. return = saves images")
+                                 help="Change the encode of all images in a dir. The return is a base64 encode of the "
+                                      "resized image. "
+                                      "** Required fields: "
+                                      "--image-dir-path "
+                                      "--encode"
+                                      ", Optional fields: "
+                                      "--output-dir-encode **")
 
         self.parser.add_argument("--image-path", type=str,
                                  help="Path to the image to be processed")
@@ -48,21 +93,21 @@ class RequestHandler:
         args = self.parser.parse_args()
 
         if args.resize_auto:
-            return self.__handle_resize_auto(args)
+            print(self.__handle_resize_auto(args))
         elif args.resize_manual:
-            return self.__handel_resize_manual(args)
+            print(self.__handel_resize_manual(args))
         elif args.resize_auto_super:
-            return self.__handel_resize_auto_super(args)
+            print(self.__handel_resize_auto_super(args))
         elif args.resize_auto_basic:
-            return self.__handel_resize_auto_basic(args)
+            print(self.__handel_resize_auto_basic(args))
         elif args.resize_dir:
-            return self.__handel_resize_dir(args)
+            print(self.__handel_resize_dir(args))
         elif args.change_encode:
-            self.__handel_change_image_encode(args)
-            return ""
+            path = self.__handel_change_image_encode(args)
+            return f"The image have been saved at:\n{path}"
         elif args.change_encode_dir:
-            self.__handel_change_encode_dir(args)
-            return ""
+            path = self.__handel_change_encode_dir(args)
+            return f"The images have been saved at:\n{path}"
         else:
             return "Command unknown. Can not process"
 
@@ -92,10 +137,12 @@ class RequestHandler:
         return resize.resize_images_in_dir(args.image_dir_path, args.output_dir_resizing, args.save_image)
 
     @staticmethod
-    def __handel_change_image_encode(args):
+    def __handel_change_image_encode(args) -> str:
         change_encode = encode.EncodeChange(args.image_path, args.encode, args.output_dir_encode)
         change_encode.change_image_encoding()
+        return change_encode.get_path()
 
     @staticmethod
-    def __handel_change_encode_dir(args):
-        encode.change_directory_images_encoding(args.image_dir_path, args.encode, args.output_dir_encode)
+    def __handel_change_encode_dir(args) -> str:
+        result = encode.change_directory_images_encoding(args.image_dir_path, args.encode, args.output_dir_encode)
+        return result

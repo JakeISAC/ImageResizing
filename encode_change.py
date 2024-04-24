@@ -31,7 +31,7 @@ class EncodeChange:
             raise NotADirectoryError
 
 
-def change_directory_images_encoding(dir_path: str, new_encoding: str, output_dir: str = ""):
+def change_directory_images_encoding(dir_path: str, new_encoding: str, output_dir: str = "") -> str:
     if output_dir == "":
         current_dir = os.getcwd()
         full_path = os.path.join(current_dir, "changed_images")
@@ -42,3 +42,5 @@ def change_directory_images_encoding(dir_path: str, new_encoding: str, output_di
         full_image_path = os.path.join(dir_path, filename)
         change_encode = EncodeChange(full_image_path, new_encoding, output_dir)
         change_encode.change_image_encoding()
+
+    return output_dir
