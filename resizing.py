@@ -96,8 +96,8 @@ class ImageResizing:
 
         # load the model and set parameters
         model = cv2.dnn_superres.DnnSuperResImpl.create()
-        model.readModel('models/FSRCNN_x2.pb')
-        model.setModel("fsrcnn", 2)
+        model.readModel('models/EDSR_x2.pb')
+        model.setModel("edsr", 2)
 
         # upsample the image
         result = model.upsample(new_image)
